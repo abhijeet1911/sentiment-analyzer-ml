@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>My AI Assistant</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f9;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+      }
+      .chat-container {
+        background: white;
+        width: 400px;
+        padding: 20px;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      }
+      h2 {
+        text-align: center;
+        color: #333;
+      }
+      #chat-box {
+        height: 300px;
+        overflow-y: auto;
+        border: 1px solid #ccc;
+        padding: 10px;
+        margin-bottom: 15px;
+        border-radius: 5px;
+        background: #fafafa;
+      }
+      .user-msg {
+        text-align: right;
+        color: blue;
+        margin-bottom: 10px;
+        font-weight: bold;
+      }
+      .ai-msg {
+        text-align: left;
+        color: green;
+        margin-bottom: 10px;
+      }
+      input {
+        width: 75%;
+        padding: 10px;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+      }
+      button {
+        width: 20%;
+        padding: 10px;
+        background: #28a745;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+      }
+      button:hover {
+        background: #218838;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="chat-container">
+      <h2>🤖 My AI Assistant</h2>
+      <div id="chat-box"></div>
+      <input type="text" id="userInput" placeholder="Ask me anything..." />
+      <button onclick="askAI()">Send</button>
+    </div>
+
+    <script>
+      async function askAI() {
+        let inputField = document.getElementById("userInput");
+        let chatBox = document.getElementById("chat-box");
+        let question = inputField.value;
+
+        if (!question) return;
+
+        // User ka message dikhana
+        chatBox.innerHTML += `<div class="user-msg">You: ${question}</div>`;
+        inputField.value = "";
+        chatBox.innerHTML += `<div class="ai-msg" id="loading">AI is typing...</div>`;
+        chatBox.scrollTop = chatBox.scrollHeight;
+// Python backend ko message bhejna
+        let response = await fetch('/predict?q=' + encodeURIComponent(question));
+        let data = await response.json();
+
+        // AI ka answer dikhana
+        document.getElementById("loading").remove();
+        // AI ka answer dikhana
+
+let color = data.answer.includes("Positive") ? "green" : (data.answer.includes("Negative") ? "red" : "gray");
+chatBox.innerHTML += `<div class="ai-msg" style="color:${color};">🤖 AI: ${data.answer}</div>`;
+        if (data.answer) {
+          chatBox.innerHTML += `<div class="ai-msg">🤖 AI: ${data.answer}</div>`;
+        } else {
+          chatBox.innerHTML += `<div class="ai-msg" style="color:red;">Error: ${data.error_message || "Kuch gadbad ho gayi!"}</div>`;
+        }
+        chatBox.scrollTop = chatBox.scrollHeight;
+      }
+    </script>
+  </body>
+</html>
